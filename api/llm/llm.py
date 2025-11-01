@@ -17,15 +17,17 @@ class LLM:
     def generate(self, messages):
         response = client.chat.completions.create(
             model=self.model_name,
+            reasoning_effort="none", # To control usage
             messages=messages,
             temperature=self.temperature,
             max_tokens=self.max_output_tokens,
         )
-        return response.choices[0].message
+        return response.choices[0].message.content
 
     def stream(self, messages):
         stream = client.chat.completions.create(
             model=self.model_name,
+            reasoning_effort="none", # To control usage
             messages=messages,
             temperature=self.temperature,
             max_tokens=self.max_output_tokens,
@@ -34,3 +36,13 @@ class LLM:
         for chunk in stream:
             if chunk.choices[0].delta.content:
                 yield chunk.choices[0].delta.content
+
+    # https://ai.google.dev/gemini-api/docs/openai#structured-output
+    def generate_structured(self, messages, format):
+        response = client.beta.chat.completions.parse(
+            model=self.model_name,
+            reasoning_effort="none", # To control usage
+            messages=messages,
+            response_format=format,
+        )
+        return response.choices[0].message.parsed
