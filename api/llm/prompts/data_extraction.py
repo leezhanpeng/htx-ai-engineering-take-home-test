@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import create_model
 
 DATA_EXTRACTION_SYSTEM_MESSAGE="""You are a data extraction assistant. Your task is to extract specific information from documents with high accuracy.
 
@@ -20,35 +20,22 @@ Document text:
 
 
 def get_format_class(output_type):
-    if output_type == "str":
-        class StrFormat(BaseModel):
-            value: str
-            reason: str
-        return StrFormat
-    if output_type == "int":
-        class IntFormat(BaseModel):
-            value: int
-            reason: str
-        return IntFormat
-    if output_type == "float":
-        class FloatFormat(BaseModel):
-            value: float
-            reason: str
-        return FloatFormat
-    if output_type == "list[str]":
-        class ListStrFormat(BaseModel):
-            value: list[str]
-            reason: str
-        return ListStrFormat
-    if output_type == "list[int]":
-        class ListIntFormat(BaseModel):
-            value: list[int]
-            reason: str
-        return ListIntFormat
-    if output_type == "list[float]":
-        class ListFloatFormat(BaseModel):
-            value: list[float]
-            reason: str
-        return ListFloatFormat
-
-    raise ValueError("Output type not part of available option.")
+    type_map = {
+        "str": str,
+        "int": int,
+        "float": float,
+        "list[str]": list[str],
+        "list[int]": list[int],
+        "list[float]": list[float],
+    }
+    
+    if output_type not in type_map:
+        raise ValueError(f"Output type '{output_type}' not supported.")
+    
+    value_type = type_map[output_type]
+    
+    return create_model(
+        "Format",
+        value=(value_type, ...),
+        reason=(str, ...)
+    )
