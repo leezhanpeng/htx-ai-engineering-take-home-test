@@ -36,6 +36,6 @@ def get_format_class(output_type):
     
     return create_model(
         "Format",
-        value=(value_type, ...),
+        value=(value_type | None, None),
         reason=(str, ...)
     )

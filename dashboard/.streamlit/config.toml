@@ -1,0 +1,3 @@
+# This toml file is purely used to stop streamlit from asking for my email during initalisation.
+[server]
+headless = true
