@@ -1,6 +1,6 @@
-from llm.prompts.data_extraction import DATA_EXTRACTION_SYSTEM_MESSAGE, DATA_EXTRACTION_USER_MESSAGE
+from llm.prompts.data_extraction import DATA_EXTRACTION_SYSTEM_MESSAGE, DATA_EXTRACTION_USER_MESSAGE, DATA_EXTRACTION_FINAL_INSTRUCTION
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import ToolMessage
+from langchain_core.messages import ToolMessage, SystemMessage, HumanMessage, AIMessage
 from pydantic import create_model
 from dotenv import load_dotenv
 import os
@@ -43,10 +43,9 @@ class DataExtractionChain:
     async def extract(self, request, output_type, text):
         # Build initial messages
         messages = [
-            ("system", DATA_EXTRACTION_SYSTEM_MESSAGE),
-            ("user", DATA_EXTRACTION_USER_MESSAGE.format(
+            SystemMessage(content=DATA_EXTRACTION_SYSTEM_MESSAGE),
+            HumanMessage(content=DATA_EXTRACTION_USER_MESSAGE.format(
                 request=request,
-                output_type=output_type,
                 text=text
             ))
         ]
@@ -56,6 +55,21 @@ class DataExtractionChain:
             messages = await self._execute_with_MCP(messages)
 
         # Force a structure in the final output so that we can parse the result with specific typecasting
+        final_instruction = DATA_EXTRACTION_FINAL_INSTRUCTION.format(output_type=output_type)
+
+        # Check if last message is a HumanMessage to avoid consecutive user messages
+        if messages and isinstance(messages[-1], HumanMessage):
+            # If last message is already from user, extend it with the instruction
+            messages[-1] = HumanMessage(content=f"{messages[-1].content}\n\n{final_instruction}")
+        else:
+            # Otherwise, append as a new user message
+            messages.append(HumanMessage(content=final_instruction))
+
+        for m in messages:
+            print(m)
+            print('-'*80)
+        print('='*80)
+
         return await self._extract_with_structure(messages, output_type)
 
     async def _execute_with_MCP(self, messages):
@@ -67,8 +81,8 @@ class DataExtractionChain:
             response = llm_with_tools.invoke(messages)
 
             if not response.tool_calls:
-                messages.append(response)
-                messages.append(("user", "Please provide your final answer in the required structured format with 'value' and 'reason' fields."))
+                # No tool calls
+                messages.append(AIMessage(content=response.content))
                 return messages
 
             messages.append(response)
@@ -108,6 +122,7 @@ class DataExtractionChain:
         
         return create_model(
             "Format",
+            original_text=(str, ...),
             value=(value_type | None, None),
             reason=(str, ...)
         )

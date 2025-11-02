@@ -82,6 +82,7 @@ async def extract(file: UploadFile = File(...), fields: str = Form(...)):
             "pages": pages_str,
             "description": description,
             "output_type": output_type,
+            "original_text": extracted.original_text,
             "extracted": extracted.value,
             "reason": extracted.reason
         })

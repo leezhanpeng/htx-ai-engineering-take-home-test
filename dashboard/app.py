@@ -46,10 +46,10 @@ if st.button("Extract", disabled=(pdf_file is None or len(st.session_state.field
         
         for result in results["results"]:
             st.subheader(f"{result['description']}")
-            col1, col2 = st.columns([1, 1])
-            with col1:
-                st.write("**Value**")
-                st.code(result['extracted'])
-            with col2:
-                st.write("**Reason**")
-                st.info(result['reason'])
+            st.write("**Original Text**")
+            st.info(f"\"{result['original_text']}\"")
+            st.write("**Value**")
+            st.code(result['extracted'])
+            st.write("**Reason**")
+            st.info(result['reason'])
+            st.divider()
