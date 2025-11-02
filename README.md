@@ -34,25 +34,28 @@ docker compose up --build
 - Dashboard: http://localhost:8501
 - API endpoint is located at http://localhost:8000
 
-## Features
+## Features & Results
 
-### 1. Document Extraction & Prompt Engineering
-- **PDF Parsing**: Text extraction using PyMuPDF
-- **Structured Extraction**: LLM-based extraction
-- **Page Targeting**: Specify exact pages or page ranges for extraction
-- **Results**: Includes original text, extracted value, and reasoning
+### Part 1 & 2: Document Extraction & Tool Calling
 
-### 2. Tool Calling & Reasoning Integration
-- **MCP Integration**: Local Model Context Protocol server for tool execution
-- **Date Normalization**: Tool calling for date parsing to ISO format (YYYY-MM-DD)
-- **Date Classification**: For date extraction, categorisation against 2024-01-01 (Expired/Upcoming/Ongoing)
+**Input:**
+![Part 1 and 2 Input](media/Part1and2input.PNG)
 
-### 3. Multi-Agent Supervisor System
-- **Agent Routing**: Supervisor analyzes queries and routes to appropriate agents
-- **Specialized Agents**:
-  - Revenue Agent: Identifies income sources, tax collections, revenue streams
-  - Expenditure Agent: Analyzes spending, budgets, fund allocations
-- **Synthesis**: Supervisor combines findings into one final answer
+**Part 1 Output:**
+![Part 1 Output](media/Part1output.PNG)
+
+**Part 2 Output:**
+
+Note that specifically for date extraction, date normalisation tool will be called, and the status of the date is also included, relative to 2024-01-01
+![Part 2 Output](media/Part2output.PNG)
+
+### Part 3: Multi-Agent System
+
+**Input:**
+![Part 3 Input](media/Part3input.PNG)
+
+**Output:**
+![Part 3 Output](media/Part3output.PNG)
 
 ## Technology Stack
 
