@@ -70,6 +70,7 @@ Note that specifically for date extraction, date normalisation tool will be call
 
 ### LLM Provider
 - Mainly using **Google Gemini 2.0 Flash**
+- Easily modifiable via environment keys, as we run it on OpenAI compatible endpoint
 
 ## Project Structure
 
