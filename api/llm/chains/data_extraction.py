@@ -65,7 +65,7 @@ class DataExtractionChain:
             # Otherwise, append as a new user message
             messages.append(HumanMessage(content=final_instruction))
 
-        return await self._extract_with_structure(messages, output_type)
+        return self._extract_with_structure(messages, output_type)
 
     async def _execute_with_MCP(self, messages):
         tools = await self._get_tools()
@@ -95,7 +95,7 @@ class DataExtractionChain:
                 messages.append(tool_message)
         return messages
 
-    async def _extract_with_structure(self, messages, output_type):
+    def _extract_with_structure(self, messages, output_type):
         format_class = self._get_format_class(output_type)
         llm_with_structure = self.llm.with_structured_output(format_class)
         return llm_with_structure.invoke(messages)

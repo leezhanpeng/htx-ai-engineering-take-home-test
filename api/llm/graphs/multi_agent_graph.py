@@ -46,26 +46,26 @@ class MultiAgentGraph:
 
         return workflow.compile()
 
-    async def _supervisor_route_node(self, state):
-        decision = await self.supervisor.route_query(state["query"])
+    def _supervisor_route_node(self, state):
+        decision = self.supervisor.route_query(state["query"])
         return {"supervisor_decision": decision["query_type"]}
 
-    async def _revenue_agent_node(self, state):
-        findings = await self.revenue_agent.analyse(
+    def _revenue_agent_node(self, state):
+        findings = self.revenue_agent.analyse(
             query=state["query"],
             pdf_text=state["pdf_text"]
         )
         return {"revenue_findings": findings}
 
-    async def _expenditure_agent_node(self, state):
-        findings = await self.expenditure_agent.analyse(
+    def _expenditure_agent_node(self, state):
+        findings = self.expenditure_agent.analyse(
             query=state["query"],
             pdf_text=state["pdf_text"]
         )
         return {"expenditure_findings": findings}
 
-    async def _supervisor_synthesise_node(self, state):
-        final_answer = await self.supervisor.synthesise_response(
+    def _supervisor_synthesise_node(self, state):
+        final_answer = self.supervisor.synthesise_response(
             query=state["query"],
             revenue_findings=state.get("revenue_findings"),
             expenditure_findings=state.get("expenditure_findings")

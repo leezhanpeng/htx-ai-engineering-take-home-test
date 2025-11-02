@@ -31,7 +31,7 @@ class Supervisor:
             query_type=(str, ...)
         )
 
-    async def route_query(self, query):
+    def route_query(self, query):
         messages = [
             SystemMessage(content=SUPERVISOR_ROUTING_SYSTEM_MESSAGE),
             HumanMessage(content=SUPERVISOR_ROUTING_USER_MESSAGE.format(query=query))
@@ -47,7 +47,7 @@ class Supervisor:
             "query_type": result.query_type
         }
 
-    async def synthesise_response(self, query, revenue_findings, expenditure_findings):
+    def synthesise_response(self, query, revenue_findings, expenditure_findings):
         revenue_text = "Not analysed" if revenue_findings is None else json.dumps(revenue_findings, indent=2)
         expenditure_text = "Not analysed" if expenditure_findings is None else json.dumps(expenditure_findings, indent=2)
 

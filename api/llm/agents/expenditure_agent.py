@@ -47,7 +47,7 @@ class ExpenditureAgent:
 
         return ExpenditureFinding
 
-    async def analyse(self, query, pdf_text):
+    def analyse(self, query, pdf_text):
         combined_text = "\n\n".join([
             f"[Page {page_num}]\n{text}"
             for page_num, text in sorted(pdf_text.items())

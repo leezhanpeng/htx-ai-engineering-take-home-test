@@ -2,7 +2,6 @@ import json
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.responses import StreamingResponse
 from contextlib import asynccontextmanager
-import asyncio
 from llm.chains.data_extraction import DataExtractionChain
 from llm.chains.date_classifier import DateClassifierChain
 from llm.graphs.multi_agent_graph import MultiAgentGraph
@@ -93,7 +92,7 @@ async def extract(file=File(...), fields=Form(...)):
         # If a date was extracted, classify it
         status = None
         if extracted.is_a_date_retrieval and extracted.value:
-            classified = await classifier_chain.classify(
+            classified = classifier_chain.classify(
                 normalised_date=extracted.value,
                 reference_date="2024-01-01"
             )
@@ -119,7 +118,6 @@ async def multi_agent_query(file=File(...), query=Form(...)):
     async def event_generator():
         async for update in multi_agent_graph.run(query=query, pdf_text=text_by_page):
             yield f"data: {json.dumps(update)}\n\n"
-            await asyncio.sleep(0)
         yield f"data: {json.dumps({'type': 'complete'})}\n\n"
 
     return StreamingResponse(
