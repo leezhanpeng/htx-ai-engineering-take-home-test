@@ -79,8 +79,8 @@ with tab2:
 
     query = st.text_area(
         "Your question:",
+        value="What are the key government revenue streams, and how will the Budget for the Future Energy Fund be supported?",
         height=80,
-        placeholder="What are the main revenue sources?",
         key="multi_agent_query"
     )
 
