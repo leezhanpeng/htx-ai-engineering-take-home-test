@@ -202,11 +202,11 @@ with tab2:
                 if result["revenue_findings"]:
                     findings = result["revenue_findings"]
 
-                    col_a, col_b = st.columns([3, 1])
+                    col_a, col_b = st.columns([1, 3])
+                    col_a.metric("Confidence", findings.get('confidence_level', 'N/A'))
                     if findings.get("total_revenue"):
                         total = findings["total_revenue"]
-                        col_a.metric("Total Revenue", f"{total.get('amount', 'N/A')} {total.get('unit', '')}")
-                    col_b.metric("Confidence", findings.get('confidence_level', 'N/A'))
+                        col_b.metric("Total Revenue", f"{total.get('amount', 'N/A')} {total.get('unit', '')}")
 
                     if findings.get('confidence_explanation'):
                         st.write(findings['confidence_explanation'])
@@ -229,11 +229,11 @@ with tab2:
                 if result["expenditure_findings"]:
                     findings = result["expenditure_findings"]
 
-                    col_a, col_b = st.columns([3, 1])
+                    col_a, col_b = st.columns([1, 3])
+                    col_a.metric("Confidence", findings.get('confidence_level', 'N/A'))
                     if findings.get("total_expenditure"):
                         total = findings["total_expenditure"]
-                        col_a.metric("Total Expenditure", f"{total.get('amount', 'N/A')} {total.get('unit', '')}")
-                    col_b.metric("Confidence", findings.get('confidence_level', 'N/A'))
+                        col_b.metric("Total Expenditure", f"{total.get('amount', 'N/A')} {total.get('unit', '')}")
 
                     if findings.get('confidence_explanation'):
                         st.write(findings['confidence_explanation'])
