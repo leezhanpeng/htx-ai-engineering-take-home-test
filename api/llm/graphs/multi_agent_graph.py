@@ -98,24 +98,6 @@ class MultiAgentGraph:
             "final_answer": ""
         }
 
-        result = await self.graph.ainvoke(initial_state)
-
-        return {
-            "final_answer": result["final_answer"],
-            "revenue_findings": result.get("revenue_findings"),
-            "expenditure_findings": result.get("expenditure_findings")
-        }
-
-    async def run_stream(self, query, pdf_text):
-        initial_state = {
-            "query": query,
-            "pdf_text": pdf_text,
-            "revenue_findings": None,
-            "expenditure_findings": None,
-            "supervisor_decision": "",
-            "final_answer": ""
-        }
-
         accumulated_state = initial_state.copy()
 
         async for event in self.graph.astream(initial_state):

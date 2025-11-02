@@ -117,7 +117,7 @@ async def multi_agent_query(file=File(...), query=Form(...)):
     text_by_page = read_pdf(file)
 
     async def event_generator():
-        async for update in multi_agent_graph.run_stream(query=query, pdf_text=text_by_page):
+        async for update in multi_agent_graph.run(query=query, pdf_text=text_by_page):
             yield f"data: {json.dumps(update)}\n\n"
             await asyncio.sleep(0)
         yield f"data: {json.dumps({'type': 'complete'})}\n\n"
