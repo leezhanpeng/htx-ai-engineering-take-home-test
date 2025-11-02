@@ -25,7 +25,7 @@ class MCPClient:
             ClientSession(read_stream, write_stream)
         )
 
-        await self.session.initialise()
+        await self.session.initialize()
 
     async def list_tools(self):
         if not self.session:
