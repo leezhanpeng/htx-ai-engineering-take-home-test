@@ -1,20 +1,26 @@
-import fitz
+import io
 import json
 from fastapi import FastAPI, UploadFile, File, Form
-from llm.llm import LLM
-from llm.prompts.data_extraction import DATA_EXTRACTION_SYSTEM_MESSAGE, DATA_EXTRACTION_USER_MESSAGE, get_format_class
+from llm.chains.data_extraction import DataExtractionChain
+from langchain_community.document_loaders.parsers.pdf import PyMuPDFParser
+from langchain_core.document_loaders import Blob
 
 app = FastAPI()
-llm = LLM(model="gemini-2.0-flash")
+extraction_chain = DataExtractionChain(model="gemini-2.0-flash")
 
-
+# Help from Claude in building this function
 def read_pdf(file):
     pdf_bytes = file.file.read()
-    out = {}
-    with fitz.open(stream=pdf_bytes, filetype="pdf") as doc:
-        for i, page in enumerate(doc, start=1):
-            out[i] = page.get_text("text")
-    return out
+    blob = Blob.from_data(pdf_bytes, mime_type="application/pdf")
+    
+    parser = PyMuPDFParser()
+    documents = parser.parse(blob)
+    
+    text_by_page = {}
+    for i, doc in enumerate(documents, start=1):
+        text_by_page[i] = doc.page_content
+    
+    return text_by_page
 
 
 def parse_page_range(range_str, total_pages):
@@ -50,14 +56,8 @@ async def extract(file: UploadFile = File(...), fields: str = Form(...)):
         page_nums = parse_page_range(pages_str, total_pages)
         text = "\n---\n".join([f"[Page {p}]\n{text_by_page[p]}" for p in page_nums])
 
-        user_message = DATA_EXTRACTION_USER_MESSAGE.format(prompt=description, output_type=output_type, text=text)
-        format_class = get_format_class(output_type)
-
-        extracted = llm.generate_structured(
-            [{"role": "system", "content": DATA_EXTRACTION_SYSTEM_MESSAGE}, {"role": "user", "content": user_message}],
-            format_class
-        )
-        
+        extracted = extraction_chain.extract(description, output_type, text)
+    
         results.append({
             "pages": pages_str,
             "description": description,
