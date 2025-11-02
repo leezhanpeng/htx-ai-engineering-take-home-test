@@ -65,11 +65,6 @@ class DataExtractionChain:
             # Otherwise, append as a new user message
             messages.append(HumanMessage(content=final_instruction))
 
-        for m in messages:
-            print(m)
-            print('-'*80)
-        print('='*80)
-
         return await self._extract_with_structure(messages, output_type)
 
     async def _execute_with_MCP(self, messages):
