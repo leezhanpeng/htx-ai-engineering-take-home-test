@@ -50,6 +50,9 @@ if st.button("Extract", disabled=(pdf_file is None or len(st.session_state.field
             st.info(f"\"{result['original_text']}\"")
             st.write("**Value**")
             st.code(result['extracted'])
+            if result['status'] is not None:
+                st.write("**Status**")
+                st.success(result['status'])
             st.write("**Reason**")
             st.info(result['reason'])
             st.divider()

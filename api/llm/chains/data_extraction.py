@@ -119,5 +119,6 @@ class DataExtractionChain:
             "Format",
             original_text=(str, ...),
             value=(value_type | None, None),
-            reason=(str, ...)
+            reason=(str, ...),
+            is_a_date_retrieval=(bool, False)
         )

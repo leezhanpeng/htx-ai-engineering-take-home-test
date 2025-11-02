@@ -2,18 +2,20 @@ import json
 from fastapi import FastAPI, UploadFile, File, Form
 from contextlib import asynccontextmanager
 from llm.chains.data_extraction import DataExtractionChain
+from llm.chains.date_classifier import DateClassifierChain
 from mcp_client import MCPClient
 from langchain_community.document_loaders.parsers.pdf import PyMuPDFParser
 from langchain_core.document_loaders import Blob
 
 mcp_client = None
 extraction_chain = None
+classifier_chain = None
 
 # Run during initialisation of the backend.
 # Code snippet credits to Claude
 @asynccontextmanager
 async def lifespan(app):
-    global mcp_client, extraction_chain
+    global mcp_client, extraction_chain, classifier_chain
 
     mcp_client = MCPClient("mcp_servers/data_extraction.py")
     await mcp_client.connect()
@@ -21,6 +23,10 @@ async def lifespan(app):
     extraction_chain = DataExtractionChain(
         model="gemini-2.0-flash",
         mcp_client=mcp_client
+    )
+
+    classifier_chain = DateClassifierChain(
+        model="gemini-2.0-flash"
     )
 
     yield
@@ -77,14 +83,24 @@ async def extract(file: UploadFile = File(...), fields: str = Form(...)):
         text = "\n---\n".join([f"[Page {p}]\n{text_by_page[p]}" for p in page_nums])
 
         extracted = await extraction_chain.extract(description, output_type, text)
-    
+
+        # If a date was extracted, classify it
+        status = None
+        if extracted.is_a_date_retrieval and extracted.value:
+            classified = await classifier_chain.classify(
+                normalized_date=extracted.value,
+                reference_date="2024-01-01"
+            )
+            status = classified.classification
+
         results.append({
             "pages": pages_str,
             "description": description,
             "output_type": output_type,
             "original_text": extracted.original_text,
             "extracted": extracted.value,
-            "reason": extracted.reason
+            "reason": extracted.reason,
+            "status": status
         })
     
     return {"results": results}
