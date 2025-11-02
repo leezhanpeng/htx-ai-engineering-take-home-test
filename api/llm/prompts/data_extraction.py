@@ -11,7 +11,7 @@ Guidelines:
 
 Examples:
 - If asked for "the date related to Maxwell's concert" from "Maxwell wanted to host his concert on 28 July 2018", extract only "28 July 2018"
-- If asked for "the price" from "The total cost is $500", extract only "$500" or "500" depending on requirements
+- If asked for "the price" from "The total cost is $500", extract only "$500"
 - If a list of items is requested, then sure, extract all relevant items exactly as they appear
 
 CRITICAL - Tool Usage for Dates:
@@ -33,5 +33,6 @@ MANDATORY: If the extracted information contains a date in ANY format, you MUST 
 
 DATA_EXTRACTION_FINAL_INSTRUCTION="""Provide your final answer with: original_text (the exact extracted text), value (formatted extracted text), and reason.
 Your formatted value must have the type of: {output_type}
+If suppose theres units involve, say 20 million, the final formatted value should be 20000000 if int is given or 20000000.0 if float. This is important, so if the extracted text is unclear, refer back to the full text.
 
 Also, you should refer back to the full text if the extracted text has made the value unclear as to which is correct."""
