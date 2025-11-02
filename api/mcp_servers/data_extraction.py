@@ -29,10 +29,10 @@ async def list_tools():
     return [tool["definition"] for tool in available_tools]
 
 @app.call_tool()
-async def call_tool(name: str, arguments: dict):
+async def call_tool(name, arguments):
     if name not in tool_mapper:
         raise ValueError(f"Unknown tool: {name}")
-    
+
     tool = tool_mapper[name]
     return tool(arguments)
 

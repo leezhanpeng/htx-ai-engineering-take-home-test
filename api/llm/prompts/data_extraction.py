@@ -19,7 +19,7 @@ CRITICAL - Tool Usage for Dates:
 - If you extract ANY date (day, month, year, or any combination), you are REQUIRED to call the normalise_date tool
 - Examples of dates that require the tool: "3 January 2028", "11 December 2009", etc.
 - The tool will format the date correctly - you cannot skip this step
-- After calling the tool, use the normalized result as your value
+- After calling the tool, use the normalised result as your value
 - Failure to use the normalise_date tool for date extractions is incorrect"""
 
 DATA_EXTRACTION_USER_MESSAGE="""Extract the exact string information from the provided text:
@@ -29,7 +29,7 @@ Request: {request}
 Document text:
 {text}
 
-MANDATORY: If the extracted information contains a date in ANY format, you MUST call the normalise_date tool before providing your final answer. This is not optional - all dates must be normalized using the tool."""
+MANDATORY: If the extracted information contains a date in ANY format, you MUST call the normalise_date tool before providing your final answer. This is not optional - all dates must be normalised using the tool."""
 
 DATA_EXTRACTION_FINAL_INSTRUCTION="""Provide your final answer with: original_text (the exact extracted text), value (formatted extracted text), and reason.
 Your formatted value must have the type of: {output_type}
