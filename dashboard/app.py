@@ -1,6 +1,10 @@
+
+import os
 import streamlit as st
 import requests
 import json
+
+API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:8000")
 
 st.set_page_config(
     page_title="HTX AI Engineering Take Home Test",
@@ -52,7 +56,7 @@ with tab1:
             files = {"file": (pdf_file.name, pdf_file.read())}
             data = {"fields": json.dumps(st.session_state.fields_to_extract)}
 
-            response = requests.post("http://localhost:8000/extract", files=files, data=data)
+            response = requests.post(f"{API_BASE_URL}/extract", files=files, data=data)
             results = response.json()
 
             for result in results["results"]:
@@ -93,7 +97,7 @@ with tab2:
         logs = []
 
         response = requests.post(
-            "http://localhost:8000/multi-agent-query",
+            f"{API_BASE_URL}/multi-agent-query",
             files=files,
             data=data,
             stream=True,
