@@ -17,11 +17,11 @@ class DateClassifierChain:
             temperature=0.0
         )
 
-    async def classify(self, normalized_date, reference_date="2024-01-01"):
+    async def classify(self, normalised_date, reference_date="2024-01-01"):
         messages = [
             SystemMessage(content=DATE_CLASSIFIER_SYSTEM_MESSAGE),
             HumanMessage(content=DATE_CLASSIFIER_USER_MESSAGE.format(
-                normalized_date=normalized_date,
+                normalised_date=normalised_date,
                 reference_date=reference_date
             ))
         ]
@@ -33,7 +33,7 @@ class DateClassifierChain:
     def _get_format_class(self):
         return create_model(
             "DateClassification",
-            normalized_date=(str, ...),
+            normalised_date=(str, ...),
             reference_date=(str, ...),
             reason=(str, ...),
             classification=(str, ...),
