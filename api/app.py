@@ -1,12 +1,32 @@
-import io
 import json
 from fastapi import FastAPI, UploadFile, File, Form
+from contextlib import asynccontextmanager
 from llm.chains.data_extraction import DataExtractionChain
+from mcp_client import MCPClient
 from langchain_community.document_loaders.parsers.pdf import PyMuPDFParser
 from langchain_core.document_loaders import Blob
 
-app = FastAPI()
-extraction_chain = DataExtractionChain(model="gemini-2.0-flash")
+mcp_client = None
+extraction_chain = None
+
+# Run during initialisation of the backend.
+# Code snippet credits to Claude
+@asynccontextmanager
+async def lifespan(app):
+    global mcp_client, extraction_chain
+
+    mcp_client = MCPClient("mcp_servers/data_extraction.py")
+    await mcp_client.connect()
+
+    extraction_chain = DataExtractionChain(
+        model="gemini-2.0-flash",
+        mcp_client=mcp_client
+    )
+
+    yield
+    await mcp_client.close()
+
+app = FastAPI(lifespan=lifespan)
 
 # Help from Claude in building this function
 def read_pdf(file):
@@ -56,7 +76,7 @@ async def extract(file: UploadFile = File(...), fields: str = Form(...)):
         page_nums = parse_page_range(pages_str, total_pages)
         text = "\n---\n".join([f"[Page {p}]\n{text_by_page[p]}" for p in page_nums])
 
-        extracted = extraction_chain.extract(description, output_type, text)
+        extracted = await extraction_chain.extract(description, output_type, text)
     
         results.append({
             "pages": pages_str,
